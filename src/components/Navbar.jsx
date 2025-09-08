@@ -45,6 +45,11 @@ const Navbar = () => {
                                 <span className="navbar-text me-3">
                                     Welcome, <strong>{authState.user?.name}</strong>!
                                 </span>
+                                {authState.user?.email === "demo@example.com" && (
+                                    <NavLink to="/admin/contact-messages" className="btn btn-outline-info m-2">
+                                        <i className="fa fa-cog me-1"></i>Admin
+                                    </NavLink>
+                                )}
                                 <button 
                                     onClick={handleLogout}
                                     className="btn btn-outline-danger m-2"

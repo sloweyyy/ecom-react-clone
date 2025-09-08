@@ -36,7 +36,7 @@ const Login = () => {
     
     // Simulate API call delay
     setTimeout(() => {
-      const result = dispatch(loginUser(formData));
+      dispatch(loginUser(formData));
       
       // Check if login was successful by checking stored users
       const storedUser = localStorage.getItem("user");

@@ -14,6 +14,13 @@ export const delCart = (product) => {
 	};
 };
 
+// For Clear Entire Cart
+export const clearCart = () => {
+	return {
+		type: "CLEARCART",
+	};
+};
+
 // For User Authentication
 export const loginUser = (user) => {
 	return {

@@ -1,7 +1,8 @@
 import React from "react";
 import { Footer, Navbar } from "../components";
 import { useSelector, useDispatch } from "react-redux";
-import { addCart, delCart } from "../redux/action";
+import { addCart, delCart, clearCart } from "../redux/action";
+import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
 
 const Cart = () => {
@@ -29,6 +30,13 @@ const Cart = () => {
   const removeItem = (product) => {
     dispatch(delCart(product));
   };
+  
+  const handleClearCart = () => {
+    if (window.confirm("Are you sure you want to clear your entire cart?")) {
+      dispatch(clearCart());
+      toast.success("Cart cleared successfully!");
+    }
+  };
 
   const ShowCart = () => {
     let subtotal = 0;
@@ -48,8 +56,16 @@ const Cart = () => {
             <div className="row d-flex justify-content-center my-4">
               <div className="col-md-8">
                 <div className="card mb-4">
-                  <div className="card-header py-3">
-                    <h5 className="mb-0">Item List</h5>
+                  <div className="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h5 className="mb-0">Item List ({totalItems} items)</h5>
+                    <button
+                      onClick={handleClearCart}
+                      className="btn btn-sm btn-outline-danger"
+                      title="Clear entire cart"
+                    >
+                      <i className="fa fa-trash me-1"></i>
+                      Clear All
+                    </button>
                   </div>
                   <div className="card-body">
                     {state.map((item) => {
@@ -147,10 +163,17 @@ const Cart = () => {
 
                     <Link
                       to="/checkout"
-                      className="btn btn-dark btn-lg btn-block"
+                      className="btn btn-dark btn-lg btn-block mb-2"
                     >
                       Go to checkout
                     </Link>
+                    <button
+                      onClick={handleClearCart}
+                      className="btn btn-outline-danger btn-lg btn-block"
+                    >
+                      <i className="fa fa-trash me-2"></i>
+                      Clear Cart
+                    </button>
                   </div>
                 </div>
               </div>
