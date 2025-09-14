@@ -1,9 +1,26 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Footer, Navbar } from "../components";
-import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { clearCart } from "../redux/action";
+import toast from "react-hot-toast";
 const Checkout = () => {
   const state = useSelector((state) => state.handleCart);
+  const auth = useSelector((state) => state.handleAuth);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!auth.isAuthenticated) {
+      toast.error("Please login to proceed with checkout");
+      navigate("/login");
+    }
+  }, [auth.isAuthenticated, navigate]);
+
+  // Don't render the component if user is not authenticated
+  if (!auth.isAuthenticated) {
+    return null;
+  }
 
   const EmptyCart = () => {
     return (
@@ -110,6 +127,8 @@ const Checkout = () => {
                           className="form-control"
                           id="email"
                           placeholder="you@example.com"
+                          value={auth.user?.email || ""}
+                          readOnly
                           required
                         />
                         <div className="invalid-feedback">
@@ -268,10 +287,36 @@ const Checkout = () => {
                     <hr className="my-4" />
 
                     <button
-                      className="w-100 btn btn-primary "
-                      type="submit" disabled
+                      className="w-100 btn btn-primary"
+                      type="submit"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        
+                        // Create order summary for demonstration
+                        const orderSummary = {
+                          orderId: `ORD-${Date.now()}`,
+                          items: state,
+                          total: Math.round(state.reduce((acc, item) => acc + (item.price * item.qty), 0) + 30),
+                          timestamp: new Date().toISOString(),
+                          customerEmail: auth.user?.email
+                        };
+                        
+                        // Store order in localStorage for demo purposes
+                        const existingOrders = JSON.parse(localStorage.getItem("orders") || "[]");
+                        existingOrders.push(orderSummary);
+                        localStorage.setItem("orders", JSON.stringify(existingOrders));
+                        
+                        // Clear the cart
+                        dispatch(clearCart());
+                        
+                        // Show success message with order ID
+                        toast.success(`Order ${orderSummary.orderId} placed successfully! Cart cleared.`);
+                        
+                        // Redirect to home page after delay
+                        setTimeout(() => navigate("/"), 2500);
+                      }}
                     >
-                      Continue to checkout
+                      Place Order
                     </button>
                   </form>
                 </div>
